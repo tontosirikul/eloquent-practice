@@ -7,7 +7,14 @@
         <h1 class="text-5xl uppercase bold">
             Update car
         </h1>
+        <div class="pt-10">
+            <a href="{{ url()->previous() }}" class="border-b-2 pb-2 border-dotted italic text-gray-500">
+                Back to cars &rarr;
+            </a>
+
+        </div>
     </div>
+    
 </div>
 
 <div class="flex justify-center pt-20">
@@ -42,5 +49,13 @@
 
     </form>
 </div>
-
+@if($errors->any())
+        <div class="w-4/8 m-auto text-center">
+            @foreach ($errors->all() as $error)
+                <li class="text-red-500 list-none">
+                    {{$error}}
+                </li>
+            @endforeach
+        </div>
+    @endif
 @endsection

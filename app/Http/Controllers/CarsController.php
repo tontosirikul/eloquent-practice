@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Car;
+use App\Rules\Uppercase;
+use App\Http\Requests\CreateValidation;
 
 class CarsController extends Controller
 {
@@ -12,6 +14,10 @@ class CarsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct() {
+        $this->middleware('auth',['except'=>['index','show']]);
+    }
+    
     public function index()
     {
         $cars = Car::all();
@@ -41,7 +47,7 @@ class CarsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateValidation $request)
     {
         // $car = new Car;
         // $car->name = $request->input('name');
@@ -49,10 +55,30 @@ class CarsController extends Controller
         // $car->description = $request->input('description');
         // $car->save();
 
+        // check incoming data
+        
+
+        $request->validated();
+
+        $newImageName = time().'-'.$request->name . '.'.$request->image->extension();
+        $request->image->move(public_path('images'), $newImageName);
+        // $request->validate([
+        //     'name'=>'required|unique:cars',
+        //     // 'name' => new Uppercase,
+        //     'founded' =>'required|integer|min:0|max:2021',
+        //     'description'=>'required'
+        // ]);
+
+        // If it's valid, it will procees.
+        // If it's not valid, throw a ValidationException
+
+
         $car = Car::create([
+            'image_path'=> $newImageName,
             'name' => $request->input('name'),
             'description' => $request->input('description'),
-            'founded' => $request->input('founded')
+            'founded' => $request->input('founded'),
+            'user_id' => auth()->user()->id,
         ]);
 
         return redirect('/cars');
@@ -89,10 +115,16 @@ class CarsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateValidation $request, $id)
     {
+        $request->validated();
+
+        $newImageName = time().'-'.$request->name . '.'.$request->image->extension();
+        $request->image->move(public_path('images'), $newImageName);
+
         $car = Car::where('id',$id)
         ->update([
+            'image_path'=> $newImageName,
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'founded' => $request->input('founded')

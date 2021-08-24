@@ -7,6 +7,7 @@
              bold">
                 {{$car->name}}
             </h1>
+            <img class="w-8/12 " src={{asset('images/'.$car->image_path)}} alt="{{$car->name}}"/>
         </div>
         <div class="pt-10">
             <a href="{{ url()->previous() }}" class="border-b-2 pb-2 border-dotted italic text-gray-500">
@@ -23,20 +24,48 @@
             <p class="text-lg text-gray-700 py-6">
                 {{$car->description}}
             </p>
+            <p class="mb-4">
+                Product types: 
+               @forelse ($car->products as $product)
+                   {{$product->name}}
+               @empty
+                   No car product description
+               @endforelse
+            </p>
+            <table class="table-auto">
+                <tr class="bg-blue-100">
+                    <th class="w-1/2 border-4">
+                        Model
+                    </th>
+                    <th class="w-1/2 border-4">
+                        Engines
+                    </th>
+                    <th class="w-1/2 border-4">
+                        Production Date
+                    </th>
+                </tr>
+                @forelse ($car->CarModels as $model)
+                    <tr>
+                        <td class="w-1/4 border-4">
+                            {{$model->model_name}}
+                        </td>
+                        <td class="w-1/4 border-4">
+                            @foreach ($car->engines as $engine)
+                                @if ($model->id == $engine->model_id)
+                                    {{$engine->engine_name}}
+                                @endif
 
-            <ul>
-                <p class="text-lg text-gray-700 py-3">
-                    Models:
-                </p>
-                @forelse ($car->carModels as $model)
-                    <li class="inline italic 
-                    text-gray-600 px-1 py-6">
-                        {{$model['model_name']}}
-                    </li>
+                            @endforeach
+                        </td>
+                        <td class="w-1/4 border-4">
+                            {{date('d-m-Y',strtotime($car->productionDate->created_at))}}
+                        </td>
+                    </tr>
                 @empty
-                    No models found
+                    <p>No car models found</p>
                 @endforelse
-            </ul>
+            </table>
+            
 
             <hr class="mt-4 mb-8">
 
